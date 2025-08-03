@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"strings"
@@ -30,7 +31,11 @@ func isVRChatRunning() bool {
 // TODO: support openshock
 
 func main() {
-	config, err := config.LoadConfig("config.json")
+	configPath := flag.String("config", "config.json", "Path to the config file")
+	flag.Parse()
+
+	config, err := config.LoadConfig(*configPath)
+
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 		panic(err)
