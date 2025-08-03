@@ -81,7 +81,7 @@ func (c *ChatBoxBuilder) EndTick(client *osc.Client) error {
 	msg := osc.NewMessage("/chatbox/input")
 	msg.Append(chatbox)
 	msg.Append(true)
-	msg.Append(true)
+	msg.Append(false)
 
 	err := client.Send(msg)
 	if err != nil {

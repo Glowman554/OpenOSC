@@ -8,7 +8,10 @@ import (
 )
 
 type Config struct {
-	Chatbox []string `json:"chatbox"`
+	Chatbox     []string `json:"chatbox"`
+	SendIP      string   `json:"sendIP"`
+	SendPort    int      `json:"sendPort"`
+	ReceivePort int      `json:"receivePort"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -20,6 +23,9 @@ func LoadConfig(filename string) (*Config, error) {
 				"{media.progress}",
 				"CPU: {sysinfo.cpu}, Memory: {sysinfo.memory}",
 			},
+			SendIP:      "127.0.0.1",
+			SendPort:    9000,
+			ReceivePort: 9001,
 		}
 
 		data, err := json.MarshalIndent(defaultConfig, "", "  ")

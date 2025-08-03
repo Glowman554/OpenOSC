@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -35,22 +36,22 @@ func main() {
 		panic(err)
 	}
 
-	for true {
-		log.Println("Waiting for VRChat")
+	// for true {
+	// 	log.Println("Waiting for VRChat")
 
-		if isVRChatRunning() {
-			break
-		}
+	// 	if isVRChatRunning() {
+	// 		break
+	// 	}
 
-		time.Sleep(2 * time.Second)
-	}
+	// 	time.Sleep(2 * time.Second)
+	// }
 
 	log.Println("Starting...")
 
-	client := osc.NewClient("127.0.0.1", 9000)
+	client := osc.NewClient(config.SendIP, config.SendPort)
 
 	dispatcher := osc.NewStandardDispatcher()
-	server := &osc.Server{Addr: "127.0.0.1:9001", Dispatcher: dispatcher}
+	server := &osc.Server{Addr: fmt.Sprintf("0.0.0.0:%d", config.ReceivePort), Dispatcher: dispatcher}
 
 	go func() {
 		err := server.ListenAndServe()

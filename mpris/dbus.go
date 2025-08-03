@@ -67,6 +67,7 @@ func (d *DBUSInterface) LoadCurrentlyPlaying(player string) (*CurrentlyPlaying, 
 	position := time.Duration(posVariant.Value().(int64)) * time.Microsecond
 
 	statusVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.PlaybackStatus")
+
 	if err != nil {
 		log.Printf("Failed to get PlaybackStatus: %v", err)
 		return nil, err
