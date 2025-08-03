@@ -154,7 +154,6 @@ func (m MediaControlModule) Tick(client *osc.Client, chatbox *chatbox.ChatBoxBui
 
 			msg := osc.NewMessage("/avatar/parameters/VRCOSC/Media/Position")
 			msg.Append(ratio)
-
 			err := client.Send(msg)
 			if err != nil {
 				log.Printf("Failed to send message: %v", err)
@@ -165,10 +164,52 @@ func (m MediaControlModule) Tick(client *osc.Client, chatbox *chatbox.ChatBoxBui
 		m.container.currentPlayer = nil
 		if playing.Status == mpris.Playing || playing.Status == mpris.Paused {
 			m.container.currentPlayer = &player
+
+			msg := osc.NewMessage("/avatar/parameters/VRCOSC/Media/Play")
+			if playing.Status == mpris.Playing {
+				msg.Append(true)
+			} else {
+				msg.Append(false)
+			}
+			err := client.Send(msg)
+			if err != nil {
+				log.Printf("Failed to send message: %v", err)
+				return err
+			}
+
+			msg = osc.NewMessage("/avatar/parameters/VRCOSC/Media/Repeat")
+			msg.Append(m.loopTypeToId(playing.Loop))
+			err = client.Send(msg)
+			if err != nil {
+				log.Printf("Failed to send message: %v", err)
+				return err
+			}
+
+			msg = osc.NewMessage("/avatar/parameters/VRCOSC/Media/Shuffle")
+			msg.Append(playing.Shuffle)
+			err = client.Send(msg)
+			if err != nil {
+				log.Printf("Failed to send message: %v", err)
+				return err
+			}
+
 			break
 		}
 
 	}
 
 	return nil
+}
+
+func (m MediaControlModule) loopTypeToId(loop mpris.LoopType) int32 {
+	switch loop {
+	case mpris.None:
+		return 0
+	case mpris.Track:
+		return 1
+	case mpris.Playlist:
+		return 2
+	default:
+		return 0
+	}
 }

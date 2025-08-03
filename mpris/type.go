@@ -28,4 +28,6 @@ type CurrentlyPlaying struct {
 	Duration time.Duration
 	Position time.Duration
 	Status   PlayStatus
+	Shuffle  bool
+	Loop     LoopType
 }

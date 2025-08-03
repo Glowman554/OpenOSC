@@ -67,13 +67,28 @@ func (d *DBUSInterface) LoadCurrentlyPlaying(player string) (*CurrentlyPlaying, 
 	position := time.Duration(posVariant.Value().(int64)) * time.Microsecond
 
 	statusVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.PlaybackStatus")
-
 	if err != nil {
 		log.Printf("Failed to get PlaybackStatus: %v", err)
 		return nil, err
 	}
 
 	status := d.stringToStatus(statusVariant.Value().(string))
+
+	shuffleVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.Shuffle")
+	if err != nil {
+		log.Printf("Failed to get Shuffle: %v", err)
+		return nil, err
+	}
+
+	shuffle := shuffleVariant.Value().(bool)
+
+	loopVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.LoopStatus")
+	if err != nil {
+		log.Printf("Failed to get LoopStatus: %v", err)
+		return nil, err
+	}
+
+	loopStatus := d.stringToLoopType(loopVariant.Value().(string))
 
 	return &CurrentlyPlaying{
 		Title:    title,
@@ -82,6 +97,8 @@ func (d *DBUSInterface) LoadCurrentlyPlaying(player string) (*CurrentlyPlaying, 
 		Duration: duration,
 		Position: position,
 		Status:   status,
+		Shuffle:  shuffle,
+		Loop:     loopStatus,
 	}, nil
 }
 
@@ -227,5 +244,18 @@ func (d *DBUSInterface) stringToStatus(status string) PlayStatus {
 		return Stopped
 	default:
 		return Unknown
+	}
+}
+
+func (d *DBUSInterface) stringToLoopType(status string) LoopType {
+	switch status {
+	case "None":
+		return None
+	case "Track":
+		return Track
+	case "Playlist":
+		return Playlist
+	default:
+		return None
 	}
 }
