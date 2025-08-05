@@ -75,20 +75,20 @@ func (d *DBUSInterface) LoadCurrentlyPlaying(player string) (*CurrentlyPlaying, 
 	status := d.stringToStatus(statusVariant.Value().(string))
 
 	shuffleVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.Shuffle")
+	shuffle := false
 	if err != nil {
-		log.Printf("Failed to get Shuffle: %v", err)
-		return nil, err
+		// log.Printf("Failed to get Shuffle: %v", err)
+	} else {
+		shuffle = shuffleVariant.Value().(bool)
 	}
-
-	shuffle := shuffleVariant.Value().(bool)
 
 	loopVariant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.LoopStatus")
+	loopStatus := None
 	if err != nil {
-		log.Printf("Failed to get LoopStatus: %v", err)
-		return nil, err
+		// log.Printf("Failed to get LoopStatus: %v", err)
+	} else {
+		loopStatus = d.stringToLoopType(loopVariant.Value().(string))
 	}
-
-	loopStatus := d.stringToLoopType(loopVariant.Value().(string))
 
 	return &CurrentlyPlaying{
 		Title:    title,
