@@ -10,6 +10,7 @@ import (
 	"github.com/Glowman554/OpenOSC/config"
 	"github.com/Glowman554/OpenOSC/oscmod"
 	"github.com/Glowman554/OpenOSC/oscmod/chatbox"
+	"github.com/Glowman554/OpenOSC/oscmod/modules"
 	"github.com/hypebeast/go-osc/osc"
 	"github.com/mitchellh/go-ps"
 )
@@ -27,8 +28,6 @@ func isVRChatRunning() bool {
 	}
 	return false
 }
-
-// TODO: support openshock
 
 func main() {
 	configPath := flag.String("config", "config.json", "Path to the config file")
@@ -51,6 +50,13 @@ func main() {
 	// 	time.Sleep(2 * time.Second)
 	// }
 
+	modules := []oscmod.OSCModule{
+		modules.NewMediaChatBoxModule(),
+		modules.NewMediaControlModule(),
+		modules.NewSysInfoModule(),
+		modules.NewOpenShockModule(config.OpenShockToken),
+	}
+
 	log.Println("Starting...")
 
 	client := osc.NewClient(config.SendIP, config.SendPort)
@@ -66,7 +72,7 @@ func main() {
 		}
 	}()
 
-	for _, module := range oscmod.Modules {
+	for _, module := range modules {
 		err := module.Init(client, dispatcher)
 		if err != nil {
 			log.Fatalf("Failed to initialize module: %s (%v)", module.Name(), err)
@@ -83,7 +89,7 @@ func main() {
 	for true {
 		chatbox.BeginTick()
 
-		for _, module := range oscmod.Modules {
+		for _, module := range modules {
 			err := module.Tick(client, chatbox)
 			if err != nil {
 				log.Printf("Failed to tick module: %s (%v)", module.Name(), err)

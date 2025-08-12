@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	Chatbox     []string `json:"chatbox"`
-	SendIP      string   `json:"sendIP"`
-	SendPort    int      `json:"sendPort"`
-	ReceivePort int      `json:"receivePort"`
+	Chatbox        []string `json:"chatbox"`
+	SendIP         string   `json:"sendIP"`
+	SendPort       int      `json:"sendPort"`
+	ReceivePort    int      `json:"receivePort"`
+	OpenShockToken string   `json:"openShockToken"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -25,9 +26,10 @@ func LoadConfig(filename string) (*Config, error) {
 				"Controlling Player: {media.control.player}",
 				"Media Player: {media.player}",
 			},
-			SendIP:      "127.0.0.1",
-			SendPort:    9000,
-			ReceivePort: 9001,
+			SendIP:         "127.0.0.1",
+			SendPort:       9000,
+			ReceivePort:    9001,
+			OpenShockToken: "",
 		}
 
 		data, err := json.MarshalIndent(defaultConfig, "", "  ")
