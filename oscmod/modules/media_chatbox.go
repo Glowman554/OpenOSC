@@ -52,6 +52,7 @@ func (m MediaChatBoxModule) Tick(client *osc.Client, chatbox *chatbox.ChatBoxBui
 			chatbox.Placeholder("media.album", playing.Album)
 			chatbox.Placeholder("media.artist", strings.Join(playing.Artist, ", "))
 			chatbox.Placeholder("media.progress", m.makeProgressBar(playing.Position, playing.Duration, 15))
+			chatbox.Placeholder("media.player", player)
 
 			break
 		}

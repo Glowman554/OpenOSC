@@ -151,19 +151,9 @@ func (d *DBUSInterface) Shuffle(player string, enabled bool) error {
 }
 
 func (d *DBUSInterface) Loop(player string, status LoopType) error {
-	loop := "None"
-	switch status {
-	case None:
-		loop = "None"
-	case Track:
-		loop = "Track"
-	case Playlist:
-		loop = "Playlist"
-	}
-
 	obj := d.session.Object(player, "/org/mpris/MediaPlayer2")
 
-	call := obj.Call("org.freedesktop.DBus.Properties.Set", 0, "org.mpris.MediaPlayer2.Player", "LoopStatus", dbus.MakeVariant(loop))
+	call := obj.Call("org.freedesktop.DBus.Properties.Set", 0, "org.mpris.MediaPlayer2.Player", "LoopStatus", dbus.MakeVariant(status))
 	if call.Err != nil {
 		log.Printf("Failed to set loop: %v", call.Err)
 		return call.Err

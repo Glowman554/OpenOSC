@@ -22,6 +22,8 @@ func LoadConfig(filename string) (*Config, error) {
 				"🎵 {media.title} - {media.artist}",
 				"{media.progress}",
 				"CPU: {sysinfo.cpu}, Memory: {sysinfo.memory}",
+				"Controlling Player: {media.control.player}",
+				"Media Player: {media.player}",
 			},
 			SendIP:      "127.0.0.1",
 			SendPort:    9000,

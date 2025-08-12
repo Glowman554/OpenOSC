@@ -164,6 +164,7 @@ func (m MediaControlModule) Tick(client *osc.Client, chatbox *chatbox.ChatBoxBui
 		m.container.currentPlayer = nil
 		if playing.Status == mpris.Playing || playing.Status == mpris.Paused {
 			m.container.currentPlayer = &player
+			chatbox.Placeholder("media.control.player", player)
 
 			msg := osc.NewMessage("/avatar/parameters/VRCOSC/Media/Play")
 			if playing.Status == mpris.Playing {

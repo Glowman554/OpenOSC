@@ -13,12 +13,12 @@ const (
 	Unknown
 )
 
-type LoopType int
+type LoopType string
 
 const (
-	None LoopType = iota
-	Track
-	Playlist
+	None     LoopType = "None"
+	Track             = "Track"
+	Playlist          = "Playlist"
 )
 
 type CurrentlyPlaying struct {
