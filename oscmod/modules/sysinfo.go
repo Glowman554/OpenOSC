@@ -30,6 +30,10 @@ func (m SysInfoModule) Name() string {
 	return "System information"
 }
 
+func (m SysInfoModule) Id() string {
+	return "sysinfo"
+}
+
 func (m SysInfoModule) Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error {
 	return nil
 }

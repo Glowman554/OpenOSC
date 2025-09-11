@@ -13,6 +13,7 @@ type Config struct {
 	SendPort       int      `json:"sendPort"`
 	ReceivePort    int      `json:"receivePort"`
 	OpenShockToken string   `json:"openShockToken"`
+	ActiveModules  []string `json:"activeModules"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -30,6 +31,11 @@ func LoadConfig(filename string) (*Config, error) {
 			SendPort:       9000,
 			ReceivePort:    9001,
 			OpenShockToken: "",
+			ActiveModules: []string{
+				"media_chatbox",
+				"media_control",
+				"sysinfo",
+			},
 		}
 
 		data, err := json.MarshalIndent(defaultConfig, "", "  ")

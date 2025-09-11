@@ -7,6 +7,7 @@ import (
 
 type OSCModule interface {
 	Name() string
+	Id() string
 	Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error
 	Tick(client *osc.Client, chatbox *chatbox.ChatBoxBuilder) error
 }

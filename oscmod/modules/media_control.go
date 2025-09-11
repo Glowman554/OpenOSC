@@ -31,6 +31,10 @@ func (m MediaControlModule) Name() string {
 	return "Meida control"
 }
 
+func (m MediaControlModule) Id() string {
+	return "media_control"
+}
+
 func (m MediaControlModule) Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error {
 	err := m.container.dbus.Connect()
 	if err != nil {

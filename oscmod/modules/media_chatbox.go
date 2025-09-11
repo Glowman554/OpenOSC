@@ -30,6 +30,10 @@ func (m MediaChatBoxModule) Name() string {
 	return "Meida ChatBox"
 }
 
+func (m MediaChatBoxModule) Id() string {
+	return "media_chatbox"
+}
+
 func (m MediaChatBoxModule) Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error {
 	err := m.container.dbus.Connect()
 	return err

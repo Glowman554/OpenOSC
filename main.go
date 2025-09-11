@@ -56,6 +56,7 @@ func main() {
 		modules.NewSysInfoModule(),
 		modules.NewOpenShockModule(config.OpenShockToken),
 	}
+	activeModules := []oscmod.OSCModule{}
 
 	log.Println("Starting...")
 
@@ -73,11 +74,21 @@ func main() {
 	}()
 
 	for _, module := range modules {
-		err := module.Init(client, dispatcher)
-		if err != nil {
-			log.Fatalf("Failed to initialize module: %s (%v)", module.Name(), err)
-		} else {
-			log.Printf("Initialized %s", module.Name())
+		activate := false
+		for _, activeModuleId := range config.ActiveModules {
+			if module.Id() == activeModuleId {
+				activate = true
+			}
+		}
+
+		if activate {
+			err := module.Init(client, dispatcher)
+			if err != nil {
+				log.Fatalf("Failed to initialize module: %s (%v)", module.Name(), err)
+			} else {
+				log.Printf("Initialized %s", module.Name())
+				activeModules = append(activeModules, module)
+			}
 		}
 	}
 
@@ -89,7 +100,7 @@ func main() {
 	for true {
 		chatbox.BeginTick()
 
-		for _, module := range modules {
+		for _, module := range activeModules {
 			err := module.Tick(client, chatbox)
 			if err != nil {
 				log.Printf("Failed to tick module: %s (%v)", module.Name(), err)

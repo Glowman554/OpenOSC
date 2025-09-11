@@ -46,6 +46,10 @@ func (m OpenShockModule) Name() string {
 	return "OpenShock"
 }
 
+func (m OpenShockModule) Id() string {
+	return "openshock"
+}
+
 func (m OpenShockModule) Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error {
 	shockers, err := m.container.api.LoadShockers()
 	if err != nil {
