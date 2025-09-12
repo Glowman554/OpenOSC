@@ -40,9 +40,12 @@ func (m SysInfoModule) Init(client *osc.Client, dispatcher *osc.StandardDispatch
 
 func (m SysInfoModule) Tick(client *osc.Client, chatbox *chatbox.ChatBoxBuilder) error {
 	m.triggerMeasure()
+	time24h, time12h := m.getCurrentTime()
 
 	chatbox.Placeholder("sysinfo.cpu", fmt.Sprintf("%d%%", m.container.currentCpu))
 	chatbox.Placeholder("sysinfo.memory", fmt.Sprintf("%d%%", m.container.currentMemory))
+	chatbox.Placeholder("sysinfo.time.12h", time12h)
+	chatbox.Placeholder("sysinfo.time.24h", time24h)
 
 	return nil
 }
@@ -63,4 +66,11 @@ func (m SysInfoModule) triggerMeasure() {
 		}
 		m.container.currentMemory = int(vm.UsedPercent)
 	}()
+}
+
+func (m SysInfoModule) getCurrentTime() (string, string) {
+	now := time.Now()
+	time24h := now.Format("15:04:05")
+	time12h := now.Format("03:04:05 PM")
+	return time24h, time12h
 }
