@@ -19,49 +19,59 @@ type LeashConfig struct {
 	LeashDirection     string  `json:"leashDirection"`
 }
 
+type OpenShockConfig struct {
+	APIToken          string `json:"apiToken"`
+	MaximumIntensity  int    `json:"maximumIntensity"`
+	MaximumDurationMS int    `json:"maximumDurationMS"`
+}
+
 type Config struct {
-	Chatbox        []string    `json:"chatbox"`
-	SendIP         string      `json:"sendIP"`
-	SendPort       int         `json:"sendPort"`
-	ReceivePort    int         `json:"receivePort"`
-	OpenShockToken string      `json:"openShockToken"`
-	ActiveModules  []string    `json:"activeModules"`
-	LeashConfig    LeashConfig `json:"leashConfig"`
+	Chatbox         []string        `json:"chatbox"`
+	SendIP          string          `json:"sendIP"`
+	SendPort        int             `json:"sendPort"`
+	ReceivePort     int             `json:"receivePort"`
+	ActiveModules   []string        `json:"activeModules"`
+	LeashConfig     LeashConfig     `json:"leashConfig"`
+	OpenShockConfig OpenShockConfig `json:"openShockConfig"`
+}
+
+var defaultConfig = Config{
+	Chatbox: []string{
+		"🎵 {media.title} - {media.artist}",
+		"{media.progress}",
+		"CPU: {sysinfo.cpu}, Memory: {sysinfo.memory}",
+		"{sysinfo.time.12h} / {sysinfo.time.24h}",
+	},
+	SendIP:      "127.0.0.1",
+	SendPort:    9000,
+	ReceivePort: 9001,
+	ActiveModules: []string{
+		"media_chatbox",
+		"media_control",
+		"leash",
+		"sysinfo",
+	},
+	LeashConfig: LeashConfig{
+		WalkDeadzone:       0.15,
+		RunDeadzone:        0.70,
+		StrengthMultiplier: 1.2,
+		UpDownDeadzone:     0.5,
+		UpDownCompensation: 0.5,
+		TurningDeadzone:    0.15,
+		TurningMultiplier:  0.8,
+		TurningGoal:        90.0,
+		LeashDirection:     "north",
+	},
+	OpenShockConfig: OpenShockConfig{
+		APIToken:          "",
+		MaximumIntensity:  100,
+		MaximumDurationMS: 30000,
+	},
 }
 
 func LoadConfig(filename string) (*Config, error) {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
-		defaultConfig := Config{
-			Chatbox: []string{
-				"🎵 {media.title} - {media.artist}",
-				"{media.progress}",
-				"CPU: {sysinfo.cpu}, Memory: {sysinfo.memory}",
-				"{sysinfo.time.12h} / {sysinfo.time.24h}",
-			},
-			SendIP:         "127.0.0.1",
-			SendPort:       9000,
-			ReceivePort:    9001,
-			OpenShockToken: "",
-			ActiveModules: []string{
-				"media_chatbox",
-				"media_control",
-				"leash",
-				"sysinfo",
-			},
-			LeashConfig: LeashConfig{
-				WalkDeadzone:       0.15,
-				RunDeadzone:        0.70,
-				StrengthMultiplier: 1.2,
-				UpDownDeadzone:     0.5,
-				UpDownCompensation: 0.5,
-				TurningDeadzone:    0.15,
-				TurningMultiplier:  0.8,
-				TurningGoal:        90.0,
-				LeashDirection:     "north",
-			},
-		}
-
 		data, err := json.MarshalIndent(defaultConfig, "", "  ")
 		if err != nil {
 			log.Printf("failed to marshal default config: %v", err)
@@ -75,6 +85,12 @@ func LoadConfig(filename string) (*Config, error) {
 		return &defaultConfig, nil
 	} else if err != nil {
 		log.Printf("failed to stat config file: %v", err)
+		return nil, err
+	}
+
+	err = updateConfigFile(filename)
+	if err != nil {
+		log.Printf("failed to update config file: %v", err)
 		return nil, err
 	}
 
@@ -92,4 +108,60 @@ func LoadConfig(filename string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func updateConfigFile(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		log.Printf("failed to read config file: %v", err)
+		return err
+	}
+
+	var config map[string]any
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		log.Printf("failed to unmarshal config: %v", err)
+		return err
+	}
+
+	changed := false
+
+	// add leash config
+	if _, ok := config["leashConfig"]; !ok {
+		changed = true
+		config["leashConfig"] = defaultConfig.LeashConfig
+	}
+
+	// update old openshock
+	var openShockToken string = ""
+	if val, ok := config["openShockToken"]; ok {
+		changed = true
+		openShockToken = val.(string)
+		delete(config, "openShockToken")
+	}
+
+	if _, ok := config["openShockConfig"]; !ok {
+		changed = true
+		openShockConfig := defaultConfig.OpenShockConfig
+		openShockConfig.APIToken = openShockToken
+		config["openShockConfig"] = openShockConfig
+
+	}
+
+	if changed {
+		log.Println("Writing updated config")
+		configJson, err := json.MarshalIndent(config, "", "  ")
+		if err != nil {
+			log.Printf("failed to marshal config: %v", err)
+			return err
+		}
+
+		err = os.WriteFile(filename, configJson, 0)
+		if err != nil {
+			log.Printf("failed to write config file: %v", err)
+			return err
+		}
+	}
+
+	return nil
 }

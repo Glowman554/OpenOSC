@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Glowman554/OpenOSC/config"
 	"github.com/Glowman554/OpenOSC/openshock"
 	"github.com/Glowman554/OpenOSC/oscmod/chatbox"
 	"github.com/hypebeast/go-osc/osc"
@@ -17,27 +18,23 @@ type OpenShockGroup struct {
 
 type OpenShockModuleContainer struct {
 	currentDefaultGroup string
+	groups              map[string]*OpenShockGroup
 
-	maxDuration  int
-	maxIntensity int
-
-	groups map[string]*OpenShockGroup
-
-	api *openshock.OpenShockApi
+	config config.OpenShockConfig
+	api    *openshock.OpenShockApi
 }
 
 type OpenShockModule struct {
 	container *OpenShockModuleContainer
 }
 
-func NewOpenShockModule(token string) OpenShockModule {
+func NewOpenShockModule(config config.OpenShockConfig) OpenShockModule {
 	return OpenShockModule{
 		container: &OpenShockModuleContainer{
 			currentDefaultGroup: "0",
-			maxDuration:         30000,
-			maxIntensity:        100,
 			groups:              map[string]*OpenShockGroup{},
-			api:                 openshock.NewOpenShockApi(token),
+			config:              config,
+			api:                 openshock.NewOpenShockApi(config.APIToken),
 		},
 	}
 }
@@ -175,14 +172,14 @@ func (m OpenShockModule) registerGroup(groupID string, shockerIDs []string, clie
 
 func (g *OpenShockGroup) handleDuration(msg *osc.Message, m OpenShockModule) {
 	if duration, ok := msg.Arguments[0].(float32); ok {
-		g.currentDuration = int(float32(m.container.maxDuration) * duration)
+		g.currentDuration = int(float32(m.container.config.MaximumDurationMS) * duration)
 		// log.Printf("Duration: %dms", g.currentDuration)
 	}
 }
 
 func (g *OpenShockGroup) handleIntensity(msg *osc.Message, m OpenShockModule) {
 	if intensity, ok := msg.Arguments[0].(float32); ok {
-		g.currentIntensity = int(float32(m.container.maxIntensity) * intensity)
+		g.currentIntensity = int(float32(m.container.config.MaximumIntensity) * intensity)
 		// log.Printf("Intensity: %d%%", g.currentIntensity)
 	}
 }
