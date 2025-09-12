@@ -62,20 +62,24 @@ func (m MediaControlModule) Init(client *osc.Client, dispatcher *osc.StandardDis
 	}
 
 	err = dispatcher.AddMsgHandler("/avatar/parameters/VRCOSC/Media/Next", func(msg *osc.Message) {
-		if m.container.currentPlayer == nil {
-			return
+		if next, ok := msg.Arguments[0].(bool); ok && next {
+			if m.container.currentPlayer == nil {
+				return
+			}
+			m.container.dbus.Next(*m.container.currentPlayer)
 		}
-		m.container.dbus.Next(*m.container.currentPlayer)
 	})
 	if err != nil {
 		return err
 	}
 
 	err = dispatcher.AddMsgHandler("/avatar/parameters/VRCOSC/Media/Previous", func(msg *osc.Message) {
-		if m.container.currentPlayer == nil {
-			return
+		if previous, ok := msg.Arguments[0].(bool); ok && previous {
+			if m.container.currentPlayer == nil {
+				return
+			}
+			m.container.dbus.Previous(*m.container.currentPlayer)
 		}
-		m.container.dbus.Previous(*m.container.currentPlayer)
 	})
 	if err != nil {
 		return err
