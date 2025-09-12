@@ -7,13 +7,26 @@ import (
 	"os"
 )
 
+type LeashConfig struct {
+	WalkDeadzone       float64 `json:"walkDeadzone"`
+	RunDeadzone        float64 `json:"runDeadzone"`
+	StrengthMultiplier float64 `json:"strengthMultiplier"`
+	UpDownDeadzone     float64 `json:"upDownDeadzone"`
+	UpDownCompensation float64 `json:"upDownCompensation"`
+	TurningDeadzone    float64 `json:"turningDeadzone"`
+	TurningMultiplier  float64 `json:"turningMultiplier"`
+	TurningGoal        float64 `json:"turningGoal"`
+	LeashDirection     string  `json:"leashDirection"`
+}
+
 type Config struct {
-	Chatbox        []string `json:"chatbox"`
-	SendIP         string   `json:"sendIP"`
-	SendPort       int      `json:"sendPort"`
-	ReceivePort    int      `json:"receivePort"`
-	OpenShockToken string   `json:"openShockToken"`
-	ActiveModules  []string `json:"activeModules"`
+	Chatbox        []string    `json:"chatbox"`
+	SendIP         string      `json:"sendIP"`
+	SendPort       int         `json:"sendPort"`
+	ReceivePort    int         `json:"receivePort"`
+	OpenShockToken string      `json:"openShockToken"`
+	ActiveModules  []string    `json:"activeModules"`
+	LeashConfig    LeashConfig `json:"leashConfig"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -34,7 +47,19 @@ func LoadConfig(filename string) (*Config, error) {
 			ActiveModules: []string{
 				"media_chatbox",
 				"media_control",
+				"leash",
 				"sysinfo",
+			},
+			LeashConfig: LeashConfig{
+				WalkDeadzone:       0.15,
+				RunDeadzone:        0.70,
+				StrengthMultiplier: 1.2,
+				UpDownDeadzone:     0.5,
+				UpDownCompensation: 0.5,
+				TurningDeadzone:    0.15,
+				TurningMultiplier:  0.8,
+				TurningGoal:        90.0,
+				LeashDirection:     "north",
 			},
 		}
 
