@@ -4,7 +4,7 @@ type ShockType string
 
 const (
 	Shock   ShockType = "Shock"
-	Vibrate           = "Vibrate"
+	Vibrate ShockType = "Vibrate"
 )
 
 type ShockControl struct {

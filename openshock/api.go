@@ -9,6 +9,9 @@ import (
 	"net/http"
 )
 
+const minimalDuration = 500
+const minimalIntensity = 1
+
 type OpenShockApi struct {
 	token string
 }
@@ -59,6 +62,14 @@ func (o *OpenShockApi) LoadShockers() ([]ShockerEntry, error) {
 }
 
 func (o *OpenShockApi) SendCommand(intensity int, duration int, command ShockType, shockerIDs []string) error {
+	if duration < minimalDuration {
+		duration = minimalDuration
+	}
+
+	if intensity < minimalIntensity {
+		intensity = minimalIntensity
+	}
+
 	commands := ShockerControlMessage{
 		Shocks:     []ShockControl{},
 		CustomName: "OpenOSC",
