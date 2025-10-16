@@ -61,7 +61,7 @@ func (m OpenShockControlModule) Init(client *osc.Client, dispatcher *osc.Standar
 	err = dispatcher.AddMsgHandler(m.container.config.DurationParameter, func(msg *osc.Message) {
 		if duration, ok := msg.Arguments[0].(float32); ok {
 			m.container.currentDuration = int(float32(m.container.config.MaximumDurationMS) * duration)
-			// log.Printf("Duration: %dms", g.currentDuration)
+			// log.Printf("Duration: %dms", m.container.currentDuration)
 		}
 	})
 	if err != nil {
@@ -71,7 +71,7 @@ func (m OpenShockControlModule) Init(client *osc.Client, dispatcher *osc.Standar
 	err = dispatcher.AddMsgHandler(m.container.config.IntensityParameter, func(msg *osc.Message) {
 		if intensity, ok := msg.Arguments[0].(float32); ok {
 			m.container.currentIntensity = int(float32(m.container.config.MaximumIntensity) * intensity)
-			// log.Printf("Intensity: %d%%", g.currentIntensity)
+			// log.Printf("Intensity: %d%%", m.container.currentIntensity)
 		}
 	})
 	if err != nil {
@@ -93,7 +93,11 @@ func (m OpenShockControlModule) Init(client *osc.Client, dispatcher *osc.Standar
 
 		err = dispatcher.AddMsgHandler(key, func(msg *osc.Message) {
 			if trigger, ok := msg.Arguments[0].(bool); ok && trigger {
-				m.container.api.SendCommand(m.container.currentIntensity, m.container.currentDuration, openshock.Shock, shockerIDs)
+				err := m.container.api.SendCommand(m.container.currentIntensity, m.container.currentDuration, openshock.Shock, shockerIDs)
+				if err != nil {
+					log.Printf("Failed to send command %v", err)
+				}
+				// log.Printf("Shock: %s", msg.Address)
 			}
 		})
 		if err != nil {
