@@ -55,6 +55,7 @@ func main() {
 		modules.NewMediaControlModule(),
 		modules.NewSysInfoModule(),
 		modules.NewOpenShockModule(config.OpenShockConfig),
+		modules.NewOpenShockControlModule(config.OpenShockConfig, config.OpenShockControlConfig),
 		modules.NewLeashModule(config.LeashConfig),
 	}
 	activeModules := []oscmod.OSCModule{}

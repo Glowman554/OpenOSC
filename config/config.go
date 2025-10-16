@@ -26,14 +26,23 @@ type OpenShockConfig struct {
 	MaximumDurationMS int    `json:"maximumDurationMS"`
 }
 
+type OpenShockControlConfig struct {
+	MaximumIntensity   int                 `json:"maximumIntensity"`
+	MaximumDurationMS  int                 `json:"maximumDurationMS"`
+	Mapping            map[string][]string `json:"mapping"`
+	DurationParameter  string              `json:"durationParameter"`
+	IntensityParameter string              `json:"intensityParameter"`
+}
+
 type Config struct {
-	Chatbox         []string        `json:"chatbox"`
-	SendIP          string          `json:"sendIP"`
-	SendPort        int             `json:"sendPort"`
-	ReceivePort     int             `json:"receivePort"`
-	ActiveModules   []string        `json:"activeModules"`
-	LeashConfig     LeashConfig     `json:"leashConfig"`
-	OpenShockConfig OpenShockConfig `json:"openShockConfig"`
+	Chatbox                []string               `json:"chatbox"`
+	SendIP                 string                 `json:"sendIP"`
+	SendPort               int                    `json:"sendPort"`
+	ReceivePort            int                    `json:"receivePort"`
+	ActiveModules          []string               `json:"activeModules"`
+	LeashConfig            LeashConfig            `json:"leashConfig"`
+	OpenShockConfig        OpenShockConfig        `json:"openShockConfig"`
+	OpenShockControlConfig OpenShockControlConfig `json:"openShockControlConfig"`
 }
 
 var defaultConfig = Config{
@@ -68,6 +77,13 @@ var defaultConfig = Config{
 		APIToken:          "",
 		MaximumIntensity:  100,
 		MaximumDurationMS: 30000,
+	},
+	OpenShockControlConfig: OpenShockControlConfig{
+		MaximumIntensity:   100,
+		MaximumDurationMS:  10000,
+		Mapping:            map[string][]string{},
+		DurationParameter:  "/avatar/parameters/Shock/Duration",
+		IntensityParameter: "/avatar/parameters/Shock/Intensity",
 	},
 }
 
@@ -155,6 +171,12 @@ func updateConfigFile(filename string) error {
 		openShockConfig.APIToken = openShockToken
 		config["openShockConfig"] = openShockConfig
 
+	}
+
+	// add openshock control config
+	if _, ok := config["openShockControlConfig"]; !ok {
+		changed = true
+		config["openShockControlConfig"] = defaultConfig.OpenShockControlConfig
 	}
 
 	if changed {

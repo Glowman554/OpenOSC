@@ -38,3 +38,19 @@ type LoadShockersMessage struct {
 		CreatedOn string         `json:"createdOn"`
 	} `json:"data"`
 }
+
+type DeviceEntry struct {
+	Id       string         `json:"id"`
+	Name     string         `json:"name"`
+	Shockers []ShockerEntry `json:"shockers"`
+}
+
+type LoadShockersSharedMessage struct {
+	Message string `json:"message"`
+	Data    []struct {
+		Id      string        `json:"id"`
+		Name    string        `json:"name"`
+		Image   string        `json:"image"`
+		Devices []DeviceEntry `json:"devices"`
+	} `json:"data"`
+}
