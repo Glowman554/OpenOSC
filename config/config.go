@@ -17,6 +17,7 @@ type LeashConfig struct {
 	TurningMultiplier  float64 `json:"turningMultiplier"`
 	TurningGoal        float64 `json:"turningGoal"`
 	LeashDirection     string  `json:"leashDirection"`
+	TurningEnabled     bool    `json:"turningEnabled"`
 }
 
 type OpenShockConfig struct {
@@ -61,6 +62,7 @@ var defaultConfig = Config{
 		TurningMultiplier:  0.8,
 		TurningGoal:        90.0,
 		LeashDirection:     "north",
+		TurningEnabled:     false,
 	},
 	OpenShockConfig: OpenShockConfig{
 		APIToken:          "",
@@ -130,6 +132,13 @@ func updateConfigFile(filename string) error {
 	if _, ok := config["leashConfig"]; !ok {
 		changed = true
 		config["leashConfig"] = defaultConfig.LeashConfig
+	}
+
+	// add turningEnabled option
+	leashConfig, _ := config["leashConfig"].(map[string]any)
+	if _, ok := leashConfig["turningEnabled"]; !ok {
+		changed = true
+		leashConfig["turningEnabled"] = defaultConfig.LeashConfig.TurningEnabled
 	}
 
 	// update old openshock
