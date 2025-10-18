@@ -194,32 +194,6 @@ func (c *LeashModuleContainer) CalculateMovement() (float64, float64, float64) {
 	return c.smoothMoveX, netY, c.smoothMoveZ
 }
 
-func (c *LeashModuleContainer) CalculateTurning(x float64, z float64) float64 {
-	goal := c.config.TurningGoal / 180.0
-
-	output := 0.0
-	switch c.config.LeashDirection {
-	case "north":
-		if z < goal {
-			output = x * c.config.TurningMultiplier
-		}
-	case "south":
-		if -z < goal {
-			output = -x * c.config.TurningMultiplier
-		}
-	case "east":
-		if x < goal {
-			output = z * c.config.TurningMultiplier
-		}
-	case "west":
-		if -x < goal {
-			output = -z * c.config.TurningMultiplier
-		}
-	}
-
-	return math.Max(-1.0, math.Min(1.0, output))
-}
-
 func (c *LeashModuleContainer) ApplyMovement(player *oscmod.Player, x float64, y float64, z float64) {
 	if !c.isGrabbed {
 		player.StopRun()
@@ -237,14 +211,4 @@ func (c *LeashModuleContainer) ApplyMovement(player *oscmod.Player, x float64, y
 	player.MoveVertical(float32(z))
 	player.MoveHorizontal(float32(x))
 
-	if c.config.TurningEnabled {
-		c.ApplyTurning(player, x, y, z)
-	}
-}
-
-func (c *LeashModuleContainer) ApplyTurning(player *oscmod.Player, x float64, y float64, z float64) {
-	if c.stretch > c.config.TurningDeadzone {
-		turnValue := c.CalculateTurning(x, z)
-		player.LookHorizontal(float32(turnValue))
-	}
 }
