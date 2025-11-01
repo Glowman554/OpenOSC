@@ -85,7 +85,7 @@ func (m GpuInfoModule) triggerMeasure() {
 		if m.container.providerAMD != nil {
 			amd, err := m.container.providerAMD.Read()
 			if err != nil {
-				log.Print("%v", err)
+				log.Printf("%v", err)
 			}
 			m.container.usageAMD = amd
 		}
@@ -93,7 +93,7 @@ func (m GpuInfoModule) triggerMeasure() {
 		if m.container.providerNVIDIA != nil {
 			nvidia, err := m.container.providerNVIDIA.Read()
 			if err != nil {
-				log.Print("%v", err)
+				log.Printf("%v", err)
 			}
 			m.container.usageNVIDIA = nvidia
 		}

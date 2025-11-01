@@ -17,8 +17,8 @@ type LoopType string
 
 const (
 	None     LoopType = "None"
-	Track             = "Track"
-	Playlist          = "Playlist"
+	Track    LoopType = "Track"
+	Playlist LoopType = "Playlist"
 )
 
 type CurrentlyPlaying struct {

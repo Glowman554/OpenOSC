@@ -47,17 +47,6 @@ func (m OpenShockControlModule) Init(client *osc.Client, dispatcher *osc.Standar
 		return err
 	}
 
-	shockerIDs := []string{}
-	for key, i := range shockers {
-		shockerIDs = append(shockerIDs, i.Id)
-		log.Printf("Found shocker %s (%s)", key, i.Id)
-	}
-
-	err = m.container.api.SendCommand(10, 500, openshock.Shock, []string{shockers["Mango's Hub:Ouch 1"].Id})
-	if err != nil {
-		return err
-	}
-
 	err = dispatcher.AddMsgHandler(m.container.config.DurationParameter, func(msg *osc.Message) {
 		if duration, ok := msg.Arguments[0].(float32); ok {
 			m.container.currentDuration = int(float32(m.container.config.MaximumDurationMS) * duration)
@@ -85,7 +74,7 @@ func (m OpenShockControlModule) Init(client *osc.Client, dispatcher *osc.Standar
 			if shocker, ok := shockers[i]; ok {
 				shockerIDs = append(shockerIDs, shocker.Id)
 			} else {
-				return fmt.Errorf("Failed to find %s", i)
+				return fmt.Errorf("failed to find %s", i)
 			}
 		}
 
