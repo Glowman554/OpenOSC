@@ -143,7 +143,7 @@ func (d *DBUSInterface) Shuffle(player string, enabled bool) error {
 
 	call := obj.Call("org.freedesktop.DBus.Properties.Set", 0, "org.mpris.MediaPlayer2.Player", "Shuffle", dbus.MakeVariant(enabled))
 	if call.Err != nil {
-		log.Printf("Failed to set shuffle: %v", call.Err)
+		// log.Printf("Failed to set shuffle: %v", call.Err)
 		return call.Err
 	}
 
@@ -155,7 +155,7 @@ func (d *DBUSInterface) Loop(player string, status LoopType) error {
 
 	call := obj.Call("org.freedesktop.DBus.Properties.Set", 0, "org.mpris.MediaPlayer2.Player", "LoopStatus", dbus.MakeVariant(status))
 	if call.Err != nil {
-		log.Printf("Failed to set loop: %v", call.Err)
+		// log.Printf("Failed to set loop: %v", call.Err)
 		return call.Err
 	}
 
@@ -193,7 +193,7 @@ func (d *DBUSInterface) Seek(player string, position float32) error {
 	call := obj.Call("org.mpris.MediaPlayer2.Player.SetPosition", 0, trackId, targetMicros)
 	if call.Err != nil {
 		log.Printf("Failed to seek: %v", call.Err)
-		return err
+		return call.Err
 	}
 
 	return nil
@@ -215,11 +215,17 @@ func (d *DBUSInterface) getStringList(m map[string]dbus.Variant, key string) []s
 
 func (d *DBUSInterface) getInt64(m map[string]dbus.Variant, key string) int64 {
 	if v, ok := m[key]; ok {
-		i64, ok := v.Value().(int64)
-		if !ok {
-			return int64(v.Value().(uint64))
+		switch val := v.Value().(type) {
+		case int64:
+			return val
+		case uint64:
+			return int64(val)
+		case float64: // why haruna??
+			return int64(val)
+		default:
+			log.Printf("Unexpected type for key %s: %T", key, val)
+			return 0
 		}
-		return i64
 	}
 	return 0
 }

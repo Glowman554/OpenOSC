@@ -36,6 +36,7 @@ type OpenShockControlConfig struct {
 
 type Config struct {
 	Chatbox                []string               `json:"chatbox"`
+	ChatboxDebug           bool                   `json:"chatboxDebug"`
 	SendIP                 string                 `json:"sendIP"`
 	SendPort               int                    `json:"sendPort"`
 	ReceivePort            int                    `json:"receivePort"`
@@ -52,9 +53,10 @@ var defaultConfig = Config{
 		"CPU: {sysinfo.cpu}, Memory: {sysinfo.memory}",
 		"{sysinfo.time.12h} / {sysinfo.time.24h}",
 	},
-	SendIP:      "127.0.0.1",
-	SendPort:    9000,
-	ReceivePort: 9001,
+	ChatboxDebug: false,
+	SendIP:       "127.0.0.1",
+	SendPort:     9000,
+	ReceivePort:  9001,
 	ActiveModules: []string{
 		"media_chatbox",
 		"media_control",
@@ -177,6 +179,13 @@ func updateConfigFile(filename string) error {
 	if _, ok := config["openShockControlConfig"]; !ok {
 		changed = true
 		config["openShockControlConfig"] = defaultConfig.OpenShockControlConfig
+	}
+
+	// add chatboxDebug
+	if _, ok := config["chatboxDebug"]; !ok {
+		changed = true
+		config["chatboxDebug"] = defaultConfig.ChatboxDebug
+
 	}
 
 	if changed {

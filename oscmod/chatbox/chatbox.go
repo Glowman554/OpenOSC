@@ -1,6 +1,7 @@
 package chatbox
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -69,13 +70,18 @@ func (c *ChatBoxBuilder) BeginTick() {
 	}
 }
 
-func (c *ChatBoxBuilder) EndTick(client *osc.Client) error {
+func (c *ChatBoxBuilder) EndTick(client *osc.Client, debug bool) error {
 	chatbox := ""
 
 	for _, line := range c.lines {
 		if line.Applies(c) {
 			chatbox += line.GetLine(c) + "\n"
 		}
+	}
+
+	if debug {
+		fmt.Println("\033[2J\033[H")
+		fmt.Print(chatbox)
 	}
 
 	msg := osc.NewMessage("/chatbox/input")

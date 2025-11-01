@@ -110,7 +110,7 @@ func main() {
 			}
 		}
 
-		chatbox.EndTick(client)
+		chatbox.EndTick(client, config.ChatboxDebug)
 
 		time.Sleep(2 * time.Second)
 	}
