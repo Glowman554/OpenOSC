@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/Glowman554/OpenOSC/config"
 	"github.com/Glowman554/OpenOSC/gpuinfo"
 	"github.com/Glowman554/OpenOSC/oscmod/chatbox"
 	"github.com/hypebeast/go-osc/osc"
@@ -15,19 +16,22 @@ type GpuInfoModuleContainer struct {
 
 	providerAMD    *gpuinfo.AMDProvider
 	providerNVIDIA *gpuinfo.NvidiaProvider
+
+	config config.GpuInfoConfig
 }
 
 type GpuInfoModule struct {
 	container *GpuInfoModuleContainer
 }
 
-func NewGpuInfoModule() GpuInfoModule {
+func NewGpuInfoModule(config config.GpuInfoConfig) GpuInfoModule {
 	return GpuInfoModule{
 		container: &GpuInfoModuleContainer{
 			usageAMD:       []gpuinfo.GPUUsage{},
 			usageNVIDIA:    []gpuinfo.GPUUsage{},
 			providerAMD:    nil,
 			providerNVIDIA: nil,
+			config:         config,
 		},
 	}
 }
@@ -41,12 +45,12 @@ func (m GpuInfoModule) Id() string {
 }
 
 func (m GpuInfoModule) Init(client *osc.Client, dispatcher *osc.StandardDispatcher) error {
-	if gpuinfo.CanUseAMDProvider() {
+	if gpuinfo.CanUseAMDProvider() && m.container.config.EnableAmd {
 		m.container.providerAMD = gpuinfo.NewAMDProvider()
 		log.Print("Enabled AMD provider")
 	}
 
-	if gpuinfo.CanUseNvidiaProvider() {
+	if gpuinfo.CanUseNvidiaProvider() && m.container.config.EnableNvidia {
 		m.container.providerNVIDIA = gpuinfo.NewNvidiaProvider()
 		log.Print("Enabled NVIDIA provider")
 	}

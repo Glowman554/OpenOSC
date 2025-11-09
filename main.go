@@ -54,7 +54,7 @@ func main() {
 		modules.NewMediaChatBoxModule(),
 		modules.NewMediaControlModule(),
 		modules.NewSysInfoModule(),
-		modules.NewGpuInfoModule(),
+		modules.NewGpuInfoModule(config.GpuInfo),
 		modules.NewOpenShockModule(config.OpenShockConfig),
 		modules.NewOpenShockControlModule(config.OpenShockConfig, config.OpenShockControlConfig),
 		modules.NewLeashModule(config.LeashConfig),

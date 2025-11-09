@@ -34,6 +34,11 @@ type OpenShockControlConfig struct {
 	IntensityParameter string              `json:"intensityParameter"`
 }
 
+type GpuInfoConfig struct {
+	EnableAmd    bool `json:"enableAmd"`
+	EnableNvidia bool `json:"enableNvidia"`
+}
+
 type Config struct {
 	Chatbox                []string               `json:"chatbox"`
 	ChatboxDebug           bool                   `json:"chatboxDebug"`
@@ -44,6 +49,7 @@ type Config struct {
 	LeashConfig            LeashConfig            `json:"leashConfig"`
 	OpenShockConfig        OpenShockConfig        `json:"openShockConfig"`
 	OpenShockControlConfig OpenShockControlConfig `json:"openShockControlConfig"`
+	GpuInfo                GpuInfoConfig          `json:"gpuInfo"`
 }
 
 var defaultConfig = Config{
@@ -86,6 +92,10 @@ var defaultConfig = Config{
 		Mapping:            map[string][]string{},
 		DurationParameter:  "/avatar/parameters/Shock/Duration",
 		IntensityParameter: "/avatar/parameters/Shock/Intensity",
+	},
+	GpuInfo: GpuInfoConfig{
+		EnableAmd:    true,
+		EnableNvidia: true,
 	},
 }
 
@@ -185,7 +195,12 @@ func updateConfigFile(filename string) error {
 	if _, ok := config["chatboxDebug"]; !ok {
 		changed = true
 		config["chatboxDebug"] = defaultConfig.ChatboxDebug
+	}
 
+	// add gpuInfo
+	if _, ok := config["gpuInfo"]; !ok {
+		changed = true
+		config["gpuInfo"] = defaultConfig.GpuInfo
 	}
 
 	if changed {
